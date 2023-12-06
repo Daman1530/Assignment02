@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Form</title>
+    <!-- Add Bootstrap CSS link -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        form {
+            max-width: 400px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input,
+        select {
+            margin-bottom: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .card {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<form id="contactForm">
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+
+    <div class="form-group">
+        <label for="phone">Phone Number:</label>
+        <input type="tel" class="form-control" id="phone" name="phone" pattern="^[0-9]{10}$" placeholder="1234567890" required>
+        <small class="form-text text-muted">Enter a 10-digit phone number.</small>
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" class="form-control" id="email" name="email" required>
+    </div>
+
+    <div class="form-group">
+        <label for="category">Category:</label>
+        <select class="form-control" id="category" name="category" required>
+            <option value="Home">Home</option>
+            <option value="Work">Work</option>
+            <option value="Mobile">Mobile</option>
+        </select>
+    </div>
+
+    <button type="button" class="btn btn-primary" onclick="submitForm()">Submit</button>
+</form>
+
+<div id="cardContainer"></div>
+
+
+
+<script>
+    function submitForm() {
+        var name = document.getElementById('name').value;
+        var phone = document.getElementById('phone').value;
+        var email = document.getElementById('email').value;
+        var category = document.getElementById('category').value;
+
+        // Validate phone number format using a regular expression
+        var phoneRegex = /^[0-9]{10}$/;
+        if (!phoneRegex.test(phone)) {
+            alert('Please enter a valid 10-digit phone number.');
+            return;
+        }
+
+        // Validate email format using a simple regular expression
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address.');
+            return;
+        }
+
+        
+        var formDataArray = JSON.parse(localStorage.getItem('formDataArray')) || [];
+
+        // Add the new form data to the array
+        formDataArray.push({
+            name: name,
+            phone: phone,
+            email: email,
+            category: category
+        });
+
+        // Store the updated array in local storage
+        localStorage.setItem('formDataArray', JSON.stringify(formDataArray));
+
+        // Redirect to the index page
+        window.location.href = './index';
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Book</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        section {
+            margin: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .contact-item {
+            background-color: white;
+            padding: 10px;
+            margin-bottom: 20px;
+            width: calc(33.33% - 20px);
+            box-sizing: border-box;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        
+
+        form {
+            margin: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            /* Adjust the width of the form as needed */
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        form input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+
+        form button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        a {
+            text-decoration: none;
+            color: #3498db;
+        }
+        
+        .delete-btn {
+            color: #e74c3c;
+            cursor: pointer;
+        }
+
+        .edit-btn {
+            color: #3498db;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <section>
+
+               <div class="contact-item">
+            <h2>John Doe</h2>
+            <p><strong>Phone:</strong> 123-456-7890</p>
+            <p><strong>Email:</strong> johnDoe123@gmail.com</p>
+            <p><strong>Category:</strong> any</p>
+            <a href="#" class="edit-btn" onclick="editContact(this)">Edit</a>
+            <a href="#" class="delete-btn" onclick="deleteContact(this)">Delete</a>
+        </div>
+
+        <div class="contact-item">
+            <h2>Jane Doe</h2>
+            <p><strong>Phone:</strong> 987-654-3210</p>
+            <p><strong>Email:</strong> johnDoe123@gmail.com</p>
+            <p><strong>Category:</strong> any</p>
+            <a href="#" class="edit-btn" onclick="editContact(this)">Edit</a>
+            <a href="#" class="delete-btn" onclick="deleteContact(this)">Delete</a>
+        </div>
+
+        <div class="contact-item">
+            <h2>Jane Doe</h2>
+            <p><strong>Phone:</strong> 987-654-3210</p>
+            <p><strong>Email:</strong> johnDoe123@gmail.com</p>
+            <p><strong>Category:</strong> any</p>
+            <a href="#" class="edit-btn" onclick="editContact(this)">Edit</a>
+            <a href="#" class="delete-btn" onclick="deleteContact(this)">Delete</a>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                
+                var formDataArray = JSON.parse(localStorage.getItem('formDataArray')) || [];
+
+                // Iterate through the array and create a new card for each form submission
+                formDataArray.forEach(function (formData) {
+                    createNewCard(formData);
+                });
+
+                // Function to create a new card and append it to the section
+                function createNewCard(formData) {
+                    const newContactItem = document.createElement('div');
+                    newContactItem.className = 'contact-item';
+                    newContactItem.innerHTML = `
+                        <h2>${formData.name}</h2>
+                        <p><strong>Phone:</strong> ${formData.phone}</p>
+                        <p><strong>Email:</strong> ${formData.email}</p>
+                        <p><strong>Category:</strong> ${formData.category}</p>
+                        <a href="#" class="edit-btn" onclick="editContact(this)">Edit</a>
+                        <a href="#" class="delete-btn" onclick="deleteContact(this)">Delete</a>
+                    `;
+                    document.querySelector('section').appendChild(newContactItem);
+                }
+            });
+
+            // Function to delete a contact card
+            function deleteContact(deleteBtn) {
+                var contactItem = deleteBtn.parentElement;
+
+                // Fetch data from local storage
+                var formDataArray = JSON.parse(localStorage.getItem('formDataArray')) || [];
+
+                // Find the index of the contact to be deleted in the array
+                var indexToDelete = formDataArray.findIndex(function (formData) {
+                    return (
+                        formData.name === contactItem.querySelector('h2').textContent &&
+                        formData.phone === contactItem.querySelector('p').textContent.replace('Phone: ', '') &&
+                        formData.email === contactItem.querySelector('p:nth-child(3)').textContent.replace('Email: ', '') &&
+                        formData.category === contactItem.querySelector('p:nth-child(4)').textContent.replace('Category: ', '')
+                    );
+                });
+
+                // Remove the contact from the array
+                if (indexToDelete !== -1) {
+                    formDataArray.splice(indexToDelete, 1);
+
+                    // Store the updated array in local storage
+                    localStorage.setItem('formDataArray', JSON.stringify(formDataArray));
+                }
+
+                // Remove the contact card from the DOM
+                contactItem.remove();
+            }
+
+             function editContact(editBtn) {
+                var contactItem = editBtn.parentElement;
+                var formData = {
+                    name: prompt('Enter the new name:', contactItem.querySelector('h2').textContent),
+                    phone: prompt('Enter the new phone number:', contactItem.querySelector('p:nth-child(2)').textContent.replace('Phone: ', '')),
+                    email: prompt('Enter the new email:', contactItem.querySelector('p:nth-child(3)').textContent.replace('Email: ', '')),
+                    category: prompt('Enter the new category:', contactItem.querySelector('p:nth-child(4)').textContent.replace('Category: ', ''))
+                };
+
+                 // Validate phone number
+                if (!isValidPhoneNumber(formData.phone)) {
+                    alert('Invalid phone number format. Please enter a valid phone number.');
+                    return;
+                }
+
+                // Validate email
+                if (!isValidEmail(formData.email)) {
+                    alert('Invalid email address format. Please enter a valid email address.');
+                    return;
+                }
+
+                
+                var formDataArray = JSON.parse(localStorage.getItem('formDataArray')) || [];
+
+                // Find the index of the contact to be edited in the array
+                var indexToEdit = formDataArray.findIndex(function (formData) {
+                    return (
+                        formData.name === contactItem.querySelector('h2').textContent &&
+                        formData.phone === contactItem.querySelector('p:nth-child(2)').textContent.replace('Phone: ', '') &&
+                        formData.email === contactItem.querySelector('p:nth-child(3)').textContent.replace('Email: ', '') &&
+                        formData.category === contactItem.querySelector('p:nth-child(4)').textContent.replace('Category: ', '')
+                    );
+                });
+
+                // Update the contact in the array
+                if (indexToEdit !== -1) {
+                    formDataArray[indexToEdit] = formData;
+
+                    
+                    localStorage.setItem('formDataArray', JSON.stringify(formDataArray));
+                }
+
+                // Update the contact card in the DOM
+                contactItem.querySelector('h2').textContent = formData.name;
+                contactItem.querySelector('p:nth-child(2)').textContent = `Phone: ${formData.phone}`;
+                contactItem.querySelector('p:nth-child(3)').textContent = `Email: ${formData.email}`;
+                contactItem.querySelector('p:nth-child(4)').textContent = `Category: ${formData.category}`;
+
+                 // Function to validate phone number format
+            function isValidPhoneNumber(phone) {
+                // Basic validation: Check if it contains only digits and dashes
+                return /^[\d-]+$/.test(phone);
+            }
+
+            // Function to validate email address format
+            function isValidEmail(email) {
+                // Basic validation using a regular expression
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+            }
+        </script>
+
+        <!-- Add more contact items as needed -->
+    </section>
+
+    <script src="script.js"></script>
+
+
+</body>
+
+</html>
